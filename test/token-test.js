@@ -1,50 +1,66 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
+const tokens = (n) => {
+    return ethers.utils.parseUnits(n.toString(), 'ether')
+}
 
 describe('Token', () => {
 
     let token;
+    let accounts;
+    let deployer
+    let receiver;
 
     beforeEach(async () => {
         // Obtain the Token from the blockchain
         const Token = await ethers.getContractFactory('Token');
         // Deploy the contract
         token = await Token.deploy('Dapp University', 'DAPP', 18, 10000000)
+
+        accounts = await ethers.getSigners();
+        deployer = accounts[0];
+        receiver = accounts[1]
     });
 
     describe('Deployment', () => {
         const name = 'Dapp University';
         const symbol = 'DAPP';
         const decimals = '18';
-        const totalSupply = '1000000000000000000';
+        const totalSupply = '10000000000000000000000000';
 
         it('has correct name', async () => {
-            // read token name
-            const name = await token.name();
-            // check the name is correct
-            expect(name).to.equal(name);
+            expect(await token.name()).to.equal(name);
         })
 
         it('has correct symbol', async () => {
-            // read token name
-            const symbol = await token.symbol();
-            // check the name is correct
-            expect(symbol).to.equal(symbol);
+            expect(await token.symbol()).to.equal(symbol);
         })
 
         it('has correct decimals', async () => {
-            // read token name
-            const decimals = await token.decimals();
-            // check the name is correct
-            expect(decimals).to.equal(decimals);
+            expect(await token.decimals()).to.equal(decimals);
         })
 
         it('has correct total supply', async () => {
-            // read token name
-            const totalSupply = await token.totalSupply();
-            // check the name is correct
-            expect(totalSupply).to.equal(totalSupply);
+            expect(await token.totalSupply()).to.equal(totalSupply);
+        })
+
+        it('assigns total supply to deployer', async () => {
+            expect(await token.balanceOf(deployer.address)).to.equal(totalSupply);
+        })
+    })
+
+    describe('Sending Token', () => {
+        let amount ;
+        it('Transfer token balances', async () => {
+            // transfer token
+            amount = tokens(100);
+            let transaction = await token.connect(deployer).transfer(receiver.address, amount);
+            let result = transaction.wait();
+            console.log(transaction.r);
+            // const token1 = await ethers.getContractAt("Token", receiver.address);
+            const balance = await ethers.provider.getBalance(transaction.r)
+            console.log(ethers.utils.formatEther(balance.toString()))
         })
     })
 });
