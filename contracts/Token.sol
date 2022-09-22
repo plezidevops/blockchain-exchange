@@ -9,10 +9,7 @@ contract Token {
     uint256 public decimals;
     uint256 public totalSupply;
 
-    // track balances
     mapping(address => uint256) public balanceOf;
-
-    // send tokens
 
     constructor(
         string memory _name,

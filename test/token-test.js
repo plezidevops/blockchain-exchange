@@ -7,10 +7,7 @@ const tokens = (n) => {
 
 describe('Token', () => {
 
-    let token;
-    let accounts;
-    let deployer
-    let receiver;
+    let token, accounts, deployer, receiver;
 
     beforeEach(async () => {
         // Obtain the Token from the blockchain
@@ -54,13 +51,9 @@ describe('Token', () => {
         let amount ;
         it('Transfer token balances', async () => {
             // transfer token
-            amount = tokens(100);
+            amount = tokens(190);
             let transaction = await token.connect(deployer).transfer(receiver.address, amount);
             let result = transaction.wait();
-            console.log(transaction.r);
-            // const token1 = await ethers.getContractAt("Token", receiver.address);
-            const balance = await ethers.provider.getBalance(transaction.r)
-            console.log(ethers.utils.formatEther(balance.toString()))
         })
     })
 });
