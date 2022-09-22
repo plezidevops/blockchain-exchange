@@ -13,7 +13,7 @@ describe('Token', () => {
         // Obtain the Token from the blockchain
         const Token = await ethers.getContractFactory('Token');
         // Deploy the contract
-        token = await Token.deploy('Dapp University', 'DAPP', 18, 10000000)
+        token = await Token.deploy('Dapp University', 'DAPP', 10000000)
 
         accounts = await ethers.getSigners();
         deployer = accounts[0];
@@ -48,12 +48,30 @@ describe('Token', () => {
     })
 
     describe('Sending Token', () => {
-        let amount ;
-        it('Transfer token balances', async () => {
-            // transfer token
+
+        let amount, transaction, result;
+
+        beforeEach( async () => {
+            // Amount of tokens we want to transfer to receiver
             amount = tokens(190);
-            let transaction = await token.connect(deployer).transfer(receiver.address, amount);
-            let result = transaction.wait();
+            // connecting to the smart contract as deployer to transfer token to receiver
+            transaction = await token.connect(deployer).transfer(receiver.address, amount);
+            result = await transaction.wait();
+
+        })
+
+        it('Transfer token balances', async () => {
+            // console.log(`Deployer: ${deployer.address} balance before transfer ${await token.balanceOf(deployer.address)}`)
+            // console.log(`Receiver: ${receiver.address} balance before transfer ${await token.balanceOf(receiver.address)}`)
+            // console.log(`amount tokens deployer is sending: ${amount}`)
+
+            // Making sure transfer is indeed happened
+            expect(await token.balanceOf(deployer.address)).to.equal(tokens(9999810))
+            expect(await token.balanceOf(receiver.address)).to.equal(amount);
+
+            // console.log(`Deployer: ${deployer.address} balance after transfer ${await token.balanceOf(deployer.address)}`)
+            // console.log(`Receiver: ${receiver.address} balance after transfer ${await token.balanceOf(receiver.address)}`)
+            // console.log(result);
         })
     })
 });
