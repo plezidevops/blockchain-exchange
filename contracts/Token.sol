@@ -11,6 +11,8 @@ contract Token {
 
     mapping(address => uint256) public balanceOf;
 
+    event Transfer(address indexed from, address indexed to, uint256 value);
+
     constructor(
         string memory _name,
         string memory _symbol,
@@ -26,9 +28,15 @@ contract Token {
         public
         returns (bool success)
     {
+        // require sender has enough token to send
+        require(balanceOf[msg.sender] >= _value);
+
         // deduct token from spender
         balanceOf[msg.sender] = balanceOf[msg.sender] - _value;
         // credit token to receiver
         balanceOf[_to] = balanceOf[_to] + _value;
+        // Emit event
+        emit Transfer(msg.sender, _to, _value);
+        return true;
     }
 }
